@@ -23,9 +23,9 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun checkData() {
-        if (intent != null) {
+        if (intent.getStringExtra(MainActivity.EDIT_NAME) != null) {
             binding.etName.setText(intent.getStringExtra(MainActivity.EDIT_NAME))
-            binding.etCount.setText(intent.getStringExtra(MainActivity.EDIT_COUNT).toString())
+            binding.etCount.setText(intent.getStringExtra(MainActivity.EDIT_COUNT))
         }
     }
 

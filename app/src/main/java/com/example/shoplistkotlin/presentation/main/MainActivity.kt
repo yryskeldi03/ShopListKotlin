@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         shopListAdapter.onShopItemClickListener = { shopItem, position ->
             Intent(this, SecondActivity::class.java).apply {
                 putExtra(EDIT_NAME, shopItem.name)
-                putExtra(EDIT_COUNT, shopItem.count)
+                putExtra(EDIT_COUNT, shopItem.count.toString())
                 startActivity(this)
             }
 
