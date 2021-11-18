@@ -2,6 +2,10 @@ package com.example.shoplistkotlin.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -16,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
     private lateinit var shopListAdapter: ShopListAdapter
-    private var isChange = false
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,27 +28,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        setupResult()
 
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
         }
 
         setupRecycler()
-        setupResult()
 
-    }
-
-    private fun setupResult() {
-        val shopItem = intent.getStringExtra(SecondActivity.COUNT)?.toInt()?.let {
-            ShopItem(
-                name = intent.getStringExtra(SecondActivity.NAME).toString(),
-                count = it,
-                enable = true
-            )
-        }
-        if (shopItem != null) {
-            viewModel.addItem(shopItem)
-        }
     }
 
     private fun setupRecycler() {
@@ -61,7 +52,6 @@ class MainActivity : AppCompatActivity() {
                 ShopListAdapter.MAX_POOL_SIZE
             )
         }
-
         setupListeners()
         setupSwipeListener(binding.rvShopList)
     }
@@ -76,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             ): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
+                val item = shopListAdapter.currentList[viewHolder.adapterPosition - 1]
                 viewModel.deleteShopItem(item)
             }
         }
@@ -100,12 +90,28 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.fab.setOnClickListener {
-            startActivity(Intent(this, SecondActivity::class.java))
+            resultLauncher.launch(Intent(this, SecondActivity::class.java))
         }
     }
 
+    private fun setupResult() {
+
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == RESULT_OK && result.data != null) {
+
+                    val shopItem = ShopItem(
+                        count = result.data!!.getStringExtra(SecondActivity.COUNT)!!.toInt(),
+                        name = result.data!!.getStringExtra(SecondActivity.NAME).toString(),
+                        enable = true
+                    )
+                    viewModel.addItem(shopItem)
+                }
+            }
+    }
+
     companion object {
-        const val EDIT_NAME = "EDITNAME"
-        const val EDIT_COUNT = "EDITCOUNT"
+        const val EDIT_NAME = "EDIT_NAME"
+        const val EDIT_COUNT = "EDIT_COUNT"
     }
 }

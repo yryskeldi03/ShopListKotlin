@@ -16,7 +16,7 @@ class SecondActivity : AppCompatActivity() {
         binding = ActivitySecondBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        checkData()
+        //checkData()
 
         setupListeners()
 
@@ -31,11 +31,11 @@ class SecondActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnSave.setOnClickListener {
-            Intent(this, MainActivity::class.java).apply {
+            val intent = Intent(this, MainActivity::class.java).apply {
                 putExtra(NAME, binding.etName.text.toString())
                 putExtra(COUNT, binding.etCount.text.toString())
-                startActivity(this)
             }
+            setResult(RESULT_OK, intent)
             finish()
         }
     }

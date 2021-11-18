@@ -17,17 +17,8 @@ class MainViewModel : ViewModel() {
 
     val shopList = getShopListUseCase.getShopList()
 
-    fun getItem(id: Int): ShopItem {
-        return getShopItemUseCase.getShopItem(id)
-    }
-
     fun addItem(shopItem: ShopItem) {
         addShopListUseCase.addShopItem(shopItem)
-    }
-
-    fun editItem(shopItem: ShopItem) {
-        val newItem = shopItem.copy(name = shopItem.name, count = shopItem.count)
-        editShopItemUseCase.editShopItem(newItem)
     }
 
     fun deleteShopItem(shopItem: ShopItem) {
@@ -37,6 +28,15 @@ class MainViewModel : ViewModel() {
     fun changeEnableState(shopItem: ShopItem) {
         val newItem = shopItem.copy(enable = !shopItem.enable)
         editShopItemUseCase.editShopItem(newItem)
+    }
+
+    fun editItem(shopItem: ShopItem) {
+        val newItem = shopItem.copy(name = shopItem.name, count = shopItem.count)
+        editShopItemUseCase.editShopItem(newItem)
+    }
+
+    fun getItem(id: Int): ShopItem {
+        return getShopItemUseCase.getShopItem(id)
     }
 
 }
